@@ -1,0 +1,74 @@
+
+snippet para calcular los tokens
+python -c 'print [str(((2**64 / 3) * i) - 2**63) for i in range(3)]'
+['-9223372036854775808', 
+'-3074457345618258603', 
+'3074457345618258602']
+
+sudo ps auwx | grep cassandra
+sudo kill -9 PID
+
+sudo rm -rf /var/lib/cassandra/*
+
+sudo sh ./bin/cassandra
+
+nodo0: 192.168.33.10 
+nodo1: 192.168.33.11
+nodo1: 192.168.33.12
+
+
+cluster_name: 'Name'
+initial_token: Token
+seed_provider:
+    - seeds:  "Seed IP"
+listen_address: Droplet's IP
+rpc_address: 0.0.0.0
+endpoint_snitch: RackInferringSnitch
+
+
+
+CREATE KEYSPACE mykeyspace WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 2 };
+
+USE mykeyspace;
+
+CREATE TABLE users (
+  user_id int PRIMARY KEY,
+  fname text,
+  lname text
+);
+
+insert in seed
+INSERT INTO users (user_id,  fname, lname)
+  VALUES (1745, 'john', 'smith');
+INSERT INTO users (user_id,  fname, lname)
+  VALUES (1744, 'john', 'doe');
+INSERT INTO users (user_id,  fname, lname)
+  VALUES (1746, 'john', 'smith');
+  
+insert in replica
+INSERT INTO users (user_id,  fname, lname)VALUES (1747, 'claudio', 'hernandez');
+  
+CONSISTENCY one
+
+ ./nodetool getendpoints mykeyspace users 1744;
+
+ 
+//WIKI
+CREATE KEYSPACE wikispace WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 2 };
+
+USE wikispace;
+
+CREATE TABLE page (
+  page_id int,
+  page_title text ,
+  page_latest int,
+  page_text text,
+  PRIMARY KEY (page_title)
+);
+CREATE INDEX ON wikispace.page (page_title);
+
+INSERT INTO page (page_id,  page_title, page_latest, page_text)VALUES (1747, 'claudio', 'hernandez');
+  
+  
+  
+
