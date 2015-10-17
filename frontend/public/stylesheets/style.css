@@ -1,0 +1,27 @@
+body {
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+#body, #footer{
+	display:block;
+}
+.container-fluid{
+	padding:50px;
+}
+.contenedorLogo{
+	width: 50%;
+	margin:0px auto;
+}
+.logo{
+	width: 100%;
+}
+#formBusqueda{
+	padding-top: 10px;
+}
+
+a {
+  color: #00B7FF;
+}
+
+.width100{
+	width: 100%;
+}
