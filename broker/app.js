@@ -6,6 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var cassandra = require('cassandra-driver');
 
+
 //SET DEBUG=asdad:* & npm start
 var client = new cassandra.Client({ contactPoints: ['192.168.33.10', '192.168.33.11', '192.168.33.12']});
 

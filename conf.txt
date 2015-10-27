@@ -1,4 +1,14 @@
 
+Actualizar cassandra
+cp /vagrant/apache-cassandra-2.1.9-bin.tar.gz ./
+tar -xvzf apache-cassandra-2.1.9-bin.tar.gz
+rm *.tar.gz
+
+copiar plugins
+cp /vagrant/cassandra-lucene-index-plugin-*.jar /home/vagrant/apache-cassandra-2.1.9/lib/
+
+cp apache-cassandra-2.0.16/conf/cassandra.yaml /vagrant/
+
 snippet para calcular los tokens
 python -c 'print [str(((2**64 / 3) * i) - 2**63) for i in range(3)]'
 ['-9223372036854775808', 
@@ -24,6 +34,7 @@ seed_provider:
 listen_address: Droplet's IP
 rpc_address: 0.0.0.0
 endpoint_snitch: RackInferringSnitch
+broadcast_rpc_address: 1.2.3.4
 
 
 
@@ -50,7 +61,18 @@ INSERT INTO users (user_id,  fname, lname)VALUES (1747, 'claudio', 'hernandez');
   
 CONSISTENCY one
 
- ./nodetool getendpoints mykeyspace users 1744;
+ ./bin/nodetool getendpoints wikispace page 6889442;
+
+ 6889442
+ 5354416
+ 2278790
+ 2877031
+ 2567741
+ 5200220
+ 5967358
+ 6883700
+ 3674378
+ 4908414
 
  
 //WIKI
@@ -59,16 +81,83 @@ CREATE KEYSPACE wikispace WITH REPLICATION = { 'class' : 'SimpleStrategy', 'repl
 USE wikispace;
 
 CREATE TABLE page (
-  page_id int,
+  page_id int PRIMARY KEY,
   page_title text ,
   page_latest int,
   page_text text,
-  PRIMARY KEY (page_title)
+  lucene TEXT
 );
-CREATE INDEX ON wikispace.page (page_title);
 
-INSERT INTO page (page_id,  page_title, page_latest, page_text)VALUES (1747, 'claudio', 'hernandez');
-  
+CREATE CUSTOM INDEX page_index ON page (lucene)
+USING 'com.stratio.cassandra.lucene.Index'
+WITH OPTIONS = {
+    'refresh_seconds' : '1',
+    'schema' : '{
+        fields : {
+            page_id    : {type : "integer"},
+            page_title  : {type : "string"},
+            page_latest  : {type : "integer"},
+            page_text  : {type : "text", analyzer : "spanish"}
+        }
+    }'
+};
+INSERT INTO page (page_id,  page_title, page_latest, page_text)VALUES (1747, 'chile', 1, 'jawoidja w doaijdoai jwdia jwodjaowijdoaiwjdg');
+INSERT INTO page (page_id,  page_title, page_latest, page_text)VALUES (1748, 'argentina',2,  'oijasodaj owijdaoisjdaisj doajsodijaosdijaoisjd');
+SELECT * FROM page
+WHERE lucene = '{filter : {
+                        type   : "contains",
+                        field  : "page_title",
+                        values : ["xen"] }}';
+						
+SELECT * FROM page
+WHERE lucene = '{filter : {
+                       type  : "match",
+                       field : "page_title",
+                       value : "Xen" }}';
+
+
+####################EJEMPLO####################
+CREATE KEYSPACE demo
+WITH REPLICATION = {'class' : 'SimpleStrategy', 'replication_factor': 1};
+USE demo;
+CREATE TABLE tweets (
+    id INT PRIMARY KEY,
+    user TEXT,
+    body TEXT,
+    time TIMESTAMP,
+    latitude FLOAT,
+    longitude FLOAT,
+    lucene TEXT
+);
+CREATE CUSTOM INDEX tweets_index ON tweets (lucene)
+USING 'com.stratio.cassandra.lucene.Index'
+WITH OPTIONS = {
+    'refresh_seconds' : '1',
+    'schema' : '{
+        fields : {
+            id    : {type : "integer"},
+            user  : {type : "string"},
+            body  : {type : "text", analyzer : "english"},
+            time  : {type : "date", pattern : "yyyy/MM/dd", sorted : true},
+            place : {type : "geo_point", latitude:"latitude", longitude:"longitude"}
+        }
+    }'
+};
+insert into demo.tweets(id,user,body) values(1, 'clhernandez', 'hola');
+insert into demo.tweets(id,user,body) values(2, 'chernandezp', 'contains hola');
+insert into demo.tweets(id,user,body) values(3, 'hernandezpezoclaudio', 'contains hola al medio');
+
+SELECT * FROM tweets
+WHERE lucene = '{filter : {
+                        type   : "contains",
+                        field  : "body",
+                        values : ["hola"] }}';
+						
+SELECT * FROM tweets
+WHERE lucene = '{filter : {
+                       type  : "match",
+                       field : "user",
+                       value : "clhernandez" }}';					
   
   
 
