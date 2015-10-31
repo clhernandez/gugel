@@ -13,7 +13,7 @@ function get(url, data){
 	    var resp = request.responseText;
 	    var j = JSON.parse(resp);
 
-	    if(j.resultados.error!=null){
+	    if(j.resultados.codigo!=null){
 	    	console.log("Desplegar mensaje");
 	    	
 	    	alert.innerHTML = j.resultados.mensaje;
@@ -22,7 +22,6 @@ function get(url, data){
 			console.log("HAY RESULTADOS");
 			
 			for (var i = 0; i < j.resultados[0].length; i++) {
-				console.log();
 				var tuple = document.createElement("tr");
 				tuple.className="tupla"
 				tuple.innerHTML = "<td>"+j.resultados[0][i].page_id+"</td><td>"+j.resultados[0][i].page_title+"</td><td>"+j.resultados[0][i].page_text+"</td>";
@@ -32,8 +31,8 @@ function get(url, data){
 			table.style = "display:block";
 	    }
 	  } else {
-	  	console.log("error en la consulta");
-	    // We reached our target server, but it returned an error
+	    alert.innerHTML = "Error, try again later.";
+		alert.style="display:block";
 	  }
 	};
 

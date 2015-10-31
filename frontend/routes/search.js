@@ -14,23 +14,13 @@ router.get('/', function(req, res, next) {
 router.get('/:query', function(req, res, next) {
 	var data = {};
 	var q = req.params.query;
-	var u = "http://localhost:3001/api/search/"+q;
+	var u = "http://192.168.32.10:3001/api/search/"+q;
 	console.log(u);
 	request.get({url: u, timeout:timeoutGlobal}, function(err,response,body){
 		console.log("Search wikipedia articles...")
-		console.log(err);
-		console.log(response.statusCode);
 
 		if (!err && response.statusCode == 200) {
 			data.resultados = JSON.parse(body);
-			/*for (var i = 0; i < data.ordenes.length; i++) {
-				data.cantidadClientes+=1;
-				data.cantidadOrdenesProducto+=1;
-				for (var j = 0; j < data.ordenes[i].productos.length; j++) {
-					data.cantidadProductos+=1;
-				};
-			};*/
-
 
 			res.json(data);
 	  	}
@@ -38,9 +28,8 @@ router.get('/:query', function(req, res, next) {
 	}).on('error', function(){
 		//error
 		console.log("ERROR");
-		data.codigo = -1;
-		data.mensaje = "An error happened :(";
-		res.render('error', data);
+		data.resultados = {codigo:-1, mensaje: "An error happened :(" };
+		res.json(data);
 	});
 
 });

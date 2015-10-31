@@ -6,9 +6,17 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var cassandra = require('cassandra-driver');
 
+var Redis = require('ioredis');
+var redis = new Redis({
+  host: "localhost",
+  port: 6379,
+  connectTimeout : 3000
+});
+
+
 
 //SET DEBUG=asdad:* & npm start
-var client = new cassandra.Client({ contactPoints: ['192.168.33.10', '192.168.33.11', '192.168.33.12']});
+var cassandra = new cassandra.Client({ contactPoints: ['192.168.33.10', '192.168.33.11', '192.168.33.12']});
 
 var routes = require('./routes/index');
 
@@ -29,7 +37,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(function(req, res, next) {
   req.db = {};
   //req.db.tasks = db.collection('tasks');
-  req.db = client;
+  req.db = cassandra;
+  req.cache = redis;
   next();
 })
 

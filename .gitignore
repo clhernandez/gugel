@@ -27,10 +27,12 @@ build/Release
 broker/node_modules/
 broker/.vagrant
 broker/ubuntuNodejs.box
+broker/redis*
 frontend/node_modules/
 frontend/.vagrant/
 loadcassandra/node_modules
 servers/
+
 
 #vagrant
 .vagrant
