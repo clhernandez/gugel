@@ -10,42 +10,47 @@ var db_config = {
 };
 var con = mysql.createPool(db_config);
 
-var termino = "X%";
-var sql = 'SELECT p.page_id, p.page_title, p.page_latest, t.old_id, t.old_text FROM page p INNER JOIN text t ON p.page_latest = t.old_id WHERE p.page_title like "' + termino + '";';
+var abc = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
+for (var i = 0; i < abc.length; i++) {
+	exeLetter(abc[i]);
+};
 
-con.getConnection(function(err, con) {
+function exeLetter(termino){
 
-	//Ejecutar consulta sql
-	var query = con.query(sql);
-	console.log("Procesando...");
-	query
-	.on('error', function(err) {
-	// Handle error, an 'end' event will be emitted after this as well
-		console.log(err);
-	})
-	.on('result', function(row) {
-	// Pausing the connnection is useful if your processing involves I/O
-	con.pause();
+	var sql = 'SELECT p.page_id, p.page_title, p.page_latest, t.old_id, t.old_text FROM page p INNER JOIN text t ON p.page_latest = t.old_id WHERE p.page_title like "' + termino + '%";';
+	con.getConnection(function(err, con) {
 
-	processRow(row, function() {
-		con.resume();
+		//Ejecutar consulta sql
+		var query = con.query(sql);
+		console.log("Procesando: "+termino);
+		query
+		.on('error', function(err) {
+		// Handle error, an 'end' event will be emitted after this as well
+			console.log(err);
+		})
+		.on('result', function(row) {
+		// Pausing the connnection is useful if your processing involves I/O
+		con.pause();
+
+		processRow(row, function() {
+			con.resume();
+		});
+
+		})
+		.on('end', function() {
+		// all rows have been received
+		console.log("end");
+		});
+
 	});
-
-	})
-	.on('end', function() {
-	// all rows have been received
-	console.log("end");
-	process.exit();
-	});
-
-});
+}
 
 function processRow(row, f){
 	exeCql(row.page_id, row.page_title, row.page_latest, row.old_text.toString('utf-8'), f);
 	
 }
 function exeCql(id, title, latest, text, f){
-	//console.log("id: ",id, "title: ", title, "latest: ", latest);
+	console.log("id: ",id, "title: ", title, "latest: ", latest);
 	client.execute("INSERT INTO wikispace.page (page_id,  page_title, page_latest, page_text)VALUES (?, ?, ?, ?);",[id,title,latest,text],{prepare:true}, function(err, result) {
 		if (err){
 			console.log(err);

@@ -14,7 +14,7 @@ router.get('/', function(req, res, next) {
 router.get('/:query', function(req, res, next) {
 	var data = {};
 	var q = req.params.query;
-	var u = "http://192.168.32.10:3001/api/search/"+q;
+	var u = "http://192.168.33.40/api/search/"+q;
 	console.log(u);
 	request.get({url: u, timeout:timeoutGlobal}, function(err,response,body){
 		console.log("Search wikipedia articles...")

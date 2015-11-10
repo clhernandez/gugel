@@ -1,19 +1,28 @@
 
 Actualizar cassandra
+cp apache-cassandra-2.1.9/conf/cassandra.yaml /vagrant/
+sudo rm -r apache*
+sudo rm -rf /var/lib/cassandra/*
 cp /vagrant/apache-cassandra-2.1.9-bin.tar.gz ./
 tar -xvzf apache-cassandra-2.1.9-bin.tar.gz
 rm *.tar.gz
+cp /vagrant/cassandra-lucene-index-plugin-*.jar /home/vagrant/apache-cassandra-2.1.9/lib/
+cp /vagrant/cassandra.yaml apache-cassandra-2.1.9/conf/
 
 copiar plugins
-cp /vagrant/cassandra-lucene-index-plugin-*.jar /home/vagrant/apache-cassandra-2.1.9/lib/
+cp apache-cassandra-2.1.9/conf/cassandra.yaml /vagrant/
+Modificar el archivo
 
-cp apache-cassandra-2.0.16/conf/cassandra.yaml /vagrant/
+
 
 snippet para calcular los tokens
-python -c 'print [str(((2**64 / 3) * i) - 2**63) for i in range(3)]'
+python -c 'print [str(((2**64 / 5) * i) - 2**63) for i in range(5)]'
 ['-9223372036854775808', 
-'-3074457345618258603', 
-'3074457345618258602']
+'-5534023222112865485', 
+'-1844674407370955162', 
+'1844674407370955161', 
+'5534023222112865484']
+
 
 sudo ps auwx | grep cassandra
 sudo kill -9 PID
@@ -22,9 +31,11 @@ sudo rm -rf /var/lib/cassandra/*
 
 sudo sh ./bin/cassandra
 
-nodo0: 192.168.33.10 
-nodo1: 192.168.33.11
-nodo1: 192.168.33.12
+nodo1: 192.168.33.10 
+nodo2: 192.168.33.11
+nodo3: 192.168.33.12
+nodo4: 192.168.33.13
+nodo5: 192.168.33.14
 
 
 cluster_name: 'Name'
@@ -76,7 +87,7 @@ CONSISTENCY one
 
  
 //WIKI
-CREATE KEYSPACE wikispace WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 2 };
+CREATE KEYSPACE wikispace WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 3 };
 
 USE wikispace;
 
